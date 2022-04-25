@@ -1,5 +1,4 @@
 #importar base de datos y libreria#
-setwd("C:/Users/Toacs/Desktop/")#modificar la ruta donde tengan el archivo rawTimes.csv
 library("tidyverse")
 library("lubridate")
 RegisterData <-
