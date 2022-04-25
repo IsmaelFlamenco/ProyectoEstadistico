@@ -1,6 +1,7 @@
 #importar base de datos y libreria#
 setwd("C:/Users/Toacs/Desktop/")#modificar la ruta donde tengan el archivo rawTimes.csv
 library("tidyverse")
+library("lubridate")
 RegisterData <-
   read_csv("rawTimes.csv", locale = locale(encoding =  "windows-1252")) #nativo de windows para tildes
 #*LIMPIAR LOS DATOS*#
