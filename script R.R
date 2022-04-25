@@ -94,30 +94,5 @@ test2022 <- test2022 %>%
     TiempoTotal = seconds_to_period(difftime(Proceso7, Proceso1, units = "secs"))
   )
 
-#Gráficas#
+#Gráficas pendiente#
 plot(proof)
-
-#Pruebas, no tomar en cuenta#
-proof <- test2021[5:12]
-proof <- test2022[5:13]
-
-#Esto no sirve#
-data.frame(lapply(proof$`Confirmación Pago Deposito`, delete))
-
-#*Con esto ya casi jala*#
-proof <- proof %>%
-  mutate(`Asignación de Carga Académica` = lapply(`Asignación de Carga Académica`, delete))
-
-#arreglar formato de tiempo
-test2021 = type.convert(test2021)
-test2022 = type.convert(test2022)
-
-# proof <- test2021 %>% # no sirve, toma el ultimo valor y lo replica
-#   mutate(`Asignación de Carga Académica` = last(x))
-#
-# proof <-
-#   test2021 %>% #solo consigue tomar el primer valor de cada registro
-#   mutate(`Confirmación Pago Deposito` = sapply(`Confirmación Pago Deposito`, `[[`, 1))
-#
-# proof <- test2021 %>% #no encuentro como aplicar
-#   mutate(`Confirmación Pago Deposito` = apply(`Confirmación Pago Deposito`, 1, `[[`, 1))
