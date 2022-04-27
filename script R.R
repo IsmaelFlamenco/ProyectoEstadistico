@@ -176,9 +176,4 @@ barplot(
   legend.text = c("Media","Desviacion Estandar"),
   names.arg = info2022$Proceso
 )
-plot(info2021)
-#no sirve#
-test<-test2021%>%summarise(TiempoTotal)
-test<-test%>%mutate(Proceso = as.factor(Proceso))
 
-x<-pareto.chart(test, col = rainbow(length(test)), main = "Prueba")
