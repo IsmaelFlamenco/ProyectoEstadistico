@@ -116,7 +116,6 @@ test2022 <- test2022 %>%
     TiempoConfirmacionInscripcion  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3),
     TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
   )
-
 #Prueba graficar pareto#
 
 #*idea, usar pivot_longer o crear dos colunmas para poner en una los nombres de 
@@ -154,14 +153,32 @@ test <-
   )
 info2022<-test%>%pivot_longer(cols = ends_with("Media")|ends_with("SD"),names_to = "Proceso")
 rm(test)
+#agrupar
+info2021<-info2021%>%arrange(Proceso)%>%group_by()
+info2022<-info2022%>%arrange(Proceso)
+#Gráficas pendiente#
+barplot(
+  info2021$value, #datos
+  main = "Inscripción 2021",
+  xlab = "Pasos",
+  ylab = "HORAS",
+  col = rainbow(2),
+  names.arg = info2021$Proceso,
+  legend.text = c("Media","Desviacion Estandar"),
+  beside = TRUE
+)
+barplot(
+  info2022$value, #datos
+  main = "Inscripción 2022",
+  xlab = "Pasos",
+  ylab = "HORAS",
+  col = rainbow(2),
+  legend.text = c("Media","Desviacion Estandar"),
+  names.arg = info2022$Proceso
+)
+plot(info2021)
 #no sirve#
 test<-test2021%>%summarise(TiempoTotal)
 test<-test%>%mutate(Proceso = as.factor(Proceso))
 
 x<-pareto.chart(test, col = rainbow(length(test)), main = "Prueba")
-
-  
-  
-
-#Gráficas pendiente#
-plot(test2021)
