@@ -67,22 +67,26 @@ test2021<-test2021%>%
   filter(
     !is.na(Proceso7),
     !is.na(Proceso1),
-    !is.na(Proceso5)
+    !is.na(Proceso5),
+    !is.na(Proceso3)
   )
 
 test2022<-test2022%>%
   filter(
     !is.na(Proceso7),
     !is.na(Proceso1),
-    !is.na(Proceso5)
+    !is.na(Proceso5),
+    !is.na(Proceso3)
   )
 
 #* operaciones *#
+#* en formato
 test2021 <- test2021 %>%
   mutate(
     TiempoCargaAcademica = seconds_to_period(difftime(Proceso2, Proceso1, units = "secs")),
     TiempoCalculoCobro = seconds_to_period(difftime(Proceso4, Proceso3, units = "secs")),
     TiempoPago = seconds_to_period(difftime(if_else(is.na(Proceso6), Proceso6bis, Proceso6), Proceso5, units = "secs")),
+    TiempoConfirmacionInscripcion  = seconds_to_period(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "secs")),
     TiempoTotal = seconds_to_period(difftime(Proceso7, Proceso1, units = "secs"))
   )
 
@@ -91,8 +95,73 @@ test2022 <- test2022 %>%
     TiempoCargaAcademica = seconds_to_period(if_else(is.na(Proceso0),difftime(Proceso2, Proceso1, units = "secs"), as.difftime(0, units = "secs"))),
     TiempoCalculoCobro = seconds_to_period(difftime(Proceso4, Proceso3, units = "secs")),
     TiempoPago = seconds_to_period(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "secs")),
+    TiempoConfirmacionInscripcion  = seconds_to_period(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "secs")),
     TiempoTotal = seconds_to_period(difftime(Proceso7, Proceso1, units = "secs"))
   )
+#*en horas*#
+test2021 <- test2021 %>%
+  mutate(
+    TiempoCargaAcademica = round(difftime(Proceso2, Proceso1, units = "hours"),3),
+    TiempoCalculoCobro = round(difftime(Proceso4, Proceso3, units = "hours"),3),
+    TiempoPago = round(difftime(if_else(is.na(Proceso6), Proceso6bis, Proceso6), Proceso5, units = "hours"),3),
+    TiempoConfirmacionInscripcion  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3),
+    TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
+  )
+
+test2022 <- test2022 %>%
+  mutate(
+    TiempoCargaAcademica = round(if_else(is.na(Proceso0),difftime(Proceso2, Proceso1, units = "hours"), as.difftime(0, units = "hours")),3),
+    TiempoCalculoCobro = round(difftime(Proceso4, Proceso3, units = "hours"),3),
+    TiempoPago = round(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "hours"),3),
+    TiempoConfirmacionInscripcion  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3),
+    TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
+  )
+
+#Prueba graficar pareto#
+
+#*idea, usar pivot_longer o crear dos colunmas para poner en una los nombres de 
+#*los procesos y en la siguiente su valor en mediana y standard deviation*#
+test<-type.convert(test2021[13:17]) 
+test <-
+  test %>% summarise(
+    AcaMedia = median(abs(TiempoCargaAcademica)),
+    AcaSD = sd(abs(TiempoCargaAcademica)),
+    CalMedia = median(abs(TiempoCalculoCobro)),
+    CalSD = sd(abs(TiempoCalculoCobro)),
+    PagMedia = median(abs(TiempoPago)),
+    PagSD = sd(abs(TiempoPago)),
+    ConMedia = median(abs(TiempoConfirmacionInscripcion)),
+    ConSD = sd(abs(TiempoConfirmacionInscripcion)),
+    TotMedia = median(abs(TiempoTotal)),
+    TotSD = sd(abs(TiempoTotal))
+  )
+
+info2021<-test%>%pivot_longer(cols = ends_with("Media")|ends_with("SD"),names_to = "Proceso")
+
+test<-type.convert(test2022[14:18]) 
+test <-
+  test %>% summarise(
+    AcaMedia = median(abs(TiempoCargaAcademica)),
+    AcaSD = sd(abs(TiempoCargaAcademica)),
+    CalMedia = median(abs(TiempoCalculoCobro)),
+    CalSD = sd(abs(TiempoCalculoCobro)),
+    PagMedia = median(abs(TiempoPago)),
+    PagSD = sd(abs(TiempoPago)),
+    ConMedia = median(abs(TiempoConfirmacionInscripcion)),
+    ConSD = sd(abs(TiempoConfirmacionInscripcion)),
+    TotMedia = median(abs(TiempoTotal)),
+    TotSD = sd(abs(TiempoTotal))
+  )
+info2022<-test%>%pivot_longer(cols = ends_with("Media")|ends_with("SD"),names_to = "Proceso")
+rm(test)
+#no sirve#
+test<-test2021%>%summarise(TiempoTotal)
+test<-test%>%mutate(Proceso = as.factor(Proceso))
+
+x<-pareto.chart(test, col = rainbow(length(test)), main = "Prueba")
+
+  
+  
 
 #Gráficas pendiente#
-plot(proof)
+plot(test2021)
