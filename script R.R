@@ -102,84 +102,64 @@ test2022<-test2022%>%
 #*en horas*#
 test2021 <- test2021 %>%
   mutate(
-    TiempoCargaAcademica = round(difftime(Proceso2, Proceso1, units = "hours"),3),
-    TiempoMuerto1 = round(difftime(Proceso3,Proceso2,units = "hours"),3),
-    TiempoCalculoCobro = round(difftime(Proceso4, Proceso3, units = "hours"),3),
-    TiempoMuerto2 = round(difftime(Proceso5,Proceso4,units = "hours"),3),
-    TiempoPago = round(difftime(if_else(is.na(Proceso6), Proceso6bis, Proceso6), Proceso5, units = "hours"),3),
-    TiempoConfirmacionInscripcion  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3),
+    TACA = round(difftime(Proceso2, Proceso1, units = "hours"),3),
+    TSCC = round(difftime(Proceso3,Proceso2,units = "hours"),3),
+    TACC = round(difftime(Proceso4, Proceso3, units = "hours"),3),
+    TCPD = round(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "hours"),3),
+    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3),
     TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
   )
 
 test2022 <- test2022 %>%
   mutate(
-    TiempoCargaAcademica = round(if_else(is.na(Proceso0),difftime(Proceso2, Proceso1, units = "hours"), as.difftime(0, units = "hours")),3),
-    TiempoMuerto1 = round(difftime(Proceso3,if_else(is.na(Proceso2),Proceso0,Proceso2),units = "hours"),3),
-    TiempoCalculoCobro = round(difftime(Proceso4, Proceso3, units = "hours"),3),
-    TiempoMuerto2 = round(difftime(Proceso5,Proceso4,units = "hours"),3),
-    TiempoPago = round(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "hours"),3),
-    TiempoConfirmacionInscripcion  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3),
-    TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
+    TACA = round(if_else(is.na(Proceso0),difftime(Proceso2, Proceso1, units = "hours"), as.difftime(0, units = "hours")),3),
+    TSCC = round(difftime(Proceso3,if_else(is.na(Proceso2),Proceso0,Proceso2),units = "hours"),3),
+    TACC = round(difftime(Proceso4, Proceso3, units = "hours"),3),
+    TCPD = round(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "hours"),3),
+    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3),
+    #TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
   )
 #Prueba graficar pareto#
 
 #*idea, usar pivot_longer o crear dos colunmas para poner en una los nombres de 
 #*los procesos y en la siguiente su valor en mediana y standard deviation*#
-test<-type.convert(test2021[13:19]) 
+test<-type.convert(test2021[13:18]) 
 test <-
   test %>% summarise(
-    AcaMedia = mean(abs(TiempoCargaAcademica)),
-    AcaSD = sd(abs(TiempoCargaAcademica)),
-    TiempoMuerto1Media = mean(abs(TiempoMuerto1)),
-    TiempoMuerto1SD = sd(abs(TiempoMuerto1)),
-    CalMedia = mean(abs(TiempoCalculoCobro)),
-    CalSD = sd(abs(TiempoCalculoCobro)),
-    TiempoMuerto2Media = mean(abs(TiempoMuerto2)),
-    TiempoMuerto2SD = sd(abs(TiempoMuerto2)),
-    PagMedia = mean(abs(TiempoPago)),
-    PagSD = sd(abs(TiempoPago)),
-    ConMedia = mean(abs(TiempoConfirmacionInscripcion)),
-    ConSD = sd(abs(TiempoConfirmacionInscripcion)),
-    TotMedia = mean(abs(TiempoTotal)),
-    TotSD = sd(abs(TiempoTotal))
+    TACA = mean(abs(TACA)),
+    TSCC = mean(abs(TSCC)),
+    TACC = mean(abs(TACC)),
+    TCPD = mean(abs(TCPD)),
+    TIF = mean(abs(TIF)),
+    #TiempoTotal = mean(abs(TiempoTotal))
   )
 
-info2021<-test%>%pivot_longer(cols = ends_with("Media")|ends_with("SD"),names_to = "Proceso")
+info2021<-test%>%pivot_longer(cols = starts_with("T"),names_to = "Proceso")
 rm(test)
-test<-type.convert(test2022[14:20]) 
+test<-type.convert(test2022[14:18]) 
 test <-
   test %>% summarise(
-    AcaMedia = mean(abs(TiempoCargaAcademica)),
-    AcaSD = sd(abs(TiempoCargaAcademica)),
-    TiempoMuerto1Media = mean(abs(TiempoMuerto1)),
-    TiempoMuerto1SD = sd(abs(TiempoMuerto1)),
-    CalMedia = mean(abs(TiempoCalculoCobro)),
-    CalSD = sd(abs(TiempoCalculoCobro)),
-    TiempoMuerto2Media = mean(abs(TiempoMuerto2)),
-    TiempoMuerto2SD = sd(abs(TiempoMuerto2)),
-    PagMedia = mean(abs(TiempoPago)),
-    PagSD = sd(abs(TiempoPago)),
-    ConMedia = mean(abs(TiempoConfirmacionInscripcion)),
-    ConSD = sd(abs(TiempoConfirmacionInscripcion)),
-    TotMedia = mean(abs(TiempoTotal)),
-    TotSD = sd(abs(TiempoTotal))
+    TACA = mean(abs(TACA)),
+    TSCC = mean(abs(TSCC)),
+    TACC = mean(abs(TACC)),
+    TCPD = mean(abs(TCPD)),
+    TIF = mean(abs(TIF)),
+    #TiempoTotal = mean(abs(TiempoTotal))
   )
 
-info2022<-test%>%pivot_longer(cols = ends_with("Media")|ends_with("SD"),names_to = "Proceso")
+info2022<-test%>%pivot_longer(cols = starts_with("T"),names_to = "Proceso")
 rm(test)
 #agrupar
-info2021<-info2021%>%arrange(Proceso)
-info2022<-info2022%>%arrange(Proceso)
+info2021<-info2021%>%arrange(desc(value))
+info2022<-info2022%>%arrange(desc(value))
 #Gráficas pendiente#
 barplot(
   info2021$value, #datos
   main = "Inscripción 2021",
   xlab = "Pasos",
   ylab = "HORAS",
-  col = rainbow(2),
+  col = rainbow(6),
   names.arg = info2021$Proceso,
-  legend.text = c("Media","S.D."),
-  args.legend = list(x = "top", inset = c(-20,0)),
   beside = TRUE
 )
 barplot(
@@ -187,10 +167,14 @@ barplot(
   main = "Inscripción 2022",
   xlab = "Pasos",
   ylab = "HORAS",
-  col = rainbow(2),
+  col = rainbow(6),
   names.arg = info2022$Proceso,
-  legend.text = c("Media","S.D."),
-  args.legend = list(x = "top", inset = c(-20,0)),
   beside = TRUE
 )
-
+#*cual proceso te toma mas tiempo
+#par matricula cual proceso es mas largo
+#pareto
+#nuevo campo en el registro y evaluar el mayor
+#ejemplo pareto
+tabla = table(info2021$Proceso)
+pareto.chart(tabla,col=rainbow(length(tabla)),main = "Inscripción")
