@@ -2,7 +2,7 @@
 library("tidyverse")
 library("lubridate")
 RegisterData <-
-  read_csv("rawTimes.csv", locale = locale(encoding =  "windows-1252")) #nativo de windows para tildes
+  read_csv("rawTimes.csv", locale = locale(encoding =  "windows-1252")) #native de windows para tildes
 #*LIMPIAR LOS DATOS*#
 
 #FILTRAR DATOS#
@@ -21,7 +21,7 @@ data2022 <-
     HoraRegistro > as.POSIXct("2022-01-01")
   ) %>% arrange(by_group = Matricula)
 
-#Ordenar datos *arreglar problema de formato - listo*
+#Trasponer proceso con su hora de registro *arreglar problema de formato - listo*
 test2021 <- data2021 %>%
   select(-...1) %>%
   pivot_wider(names_from = Proceso,
@@ -81,28 +81,31 @@ test2022<-test2022%>%
 
 #* operaciones *#
 #* en formato
-test2021 <- test2021 %>%
-  mutate(
-    TiempoCargaAcademica = seconds_to_period(difftime(Proceso2, Proceso1, units = "secs")),
-    TiempoCalculoCobro = seconds_to_period(difftime(Proceso4, Proceso3, units = "secs")),
-    TiempoPago = seconds_to_period(difftime(if_else(is.na(Proceso6), Proceso6bis, Proceso6), Proceso5, units = "secs")),
-    TiempoConfirmacionInscripcion  = seconds_to_period(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "secs")),
-    TiempoTotal = seconds_to_period(difftime(Proceso7, Proceso1, units = "secs"))
-  )
+# test2021 <- test2021 %>%
+#   mutate(
+#     TiempoCargaAcademica = seconds_to_period(difftime(Proceso2, Proceso1, units = "secs")),
+#     TiempoCalculoCobro = seconds_to_period(difftime(Proceso4, Proceso3, units = "secs")),
+#     TiempoPago = seconds_to_period(difftime(if_else(is.na(Proceso6), Proceso6bis, Proceso6), Proceso5, units = "secs")),
+#     TiempoConfirmacionInscripcion  = seconds_to_period(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "secs")),
+#     TiempoTotal = seconds_to_period(difftime(Proceso7, Proceso1, units = "secs"))
+#   )
+# 
+# test2022 <- test2022 %>%
+#   mutate(
+#     TiempoCargaAcademica = seconds_to_period(if_else(is.na(Proceso0),difftime(Proceso2, Proceso1, units = "secs"), as.difftime(0, units = "secs"))),
+#     TiempoCalculoCobro = seconds_to_period(difftime(Proceso4, Proceso3, units = "secs")),
+#     TiempoPago = seconds_to_period(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "secs")),
+#     TiempoConfirmacionInscripcion  = seconds_to_period(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "secs")),
+#     TiempoTotal = seconds_to_period(difftime(Proceso7, Proceso1, units = "secs"))
+#   )
 
-test2022 <- test2022 %>%
-  mutate(
-    TiempoCargaAcademica = seconds_to_period(if_else(is.na(Proceso0),difftime(Proceso2, Proceso1, units = "secs"), as.difftime(0, units = "secs"))),
-    TiempoCalculoCobro = seconds_to_period(difftime(Proceso4, Proceso3, units = "secs")),
-    TiempoPago = seconds_to_period(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "secs")),
-    TiempoConfirmacionInscripcion  = seconds_to_period(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "secs")),
-    TiempoTotal = seconds_to_period(difftime(Proceso7, Proceso1, units = "secs"))
-  )
 #*en horas*#
 test2021 <- test2021 %>%
   mutate(
     TiempoCargaAcademica = round(difftime(Proceso2, Proceso1, units = "hours"),3),
+    TiempoMuerto1 = round(difftime(Proceso3,Proceso2,units = "hours"),3),
     TiempoCalculoCobro = round(difftime(Proceso4, Proceso3, units = "hours"),3),
+    TiempoMuerto2 = round(difftime(Proceso5,Proceso4,units = "hours"),3),
     TiempoPago = round(difftime(if_else(is.na(Proceso6), Proceso6bis, Proceso6), Proceso5, units = "hours"),3),
     TiempoConfirmacionInscripcion  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3),
     TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
@@ -111,7 +114,9 @@ test2021 <- test2021 %>%
 test2022 <- test2022 %>%
   mutate(
     TiempoCargaAcademica = round(if_else(is.na(Proceso0),difftime(Proceso2, Proceso1, units = "hours"), as.difftime(0, units = "hours")),3),
+    TiempoMuerto1 = round(difftime(Proceso3,if_else(is.na(Proceso2),Proceso0,Proceso2),units = "hours"),3),
     TiempoCalculoCobro = round(difftime(Proceso4, Proceso3, units = "hours"),3),
+    TiempoMuerto2 = round(difftime(Proceso5,Proceso4,units = "hours"),3),
     TiempoPago = round(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "hours"),3),
     TiempoConfirmacionInscripcion  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3),
     TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
@@ -120,41 +125,50 @@ test2022 <- test2022 %>%
 
 #*idea, usar pivot_longer o crear dos colunmas para poner en una los nombres de 
 #*los procesos y en la siguiente su valor en mediana y standard deviation*#
-test<-type.convert(test2021[13:17]) 
+test<-type.convert(test2021[13:19]) 
 test <-
   test %>% summarise(
-    AcaMedia = median(abs(TiempoCargaAcademica)),
+    AcaMedia = mean(abs(TiempoCargaAcademica)),
     AcaSD = sd(abs(TiempoCargaAcademica)),
-    CalMedia = median(abs(TiempoCalculoCobro)),
+    TiempoMuerto1Media = mean(abs(TiempoMuerto1)),
+    TiempoMuerto1SD = sd(abs(TiempoMuerto1)),
+    CalMedia = mean(abs(TiempoCalculoCobro)),
     CalSD = sd(abs(TiempoCalculoCobro)),
-    PagMedia = median(abs(TiempoPago)),
+    TiempoMuerto2Media = mean(abs(TiempoMuerto2)),
+    TiempoMuerto2SD = sd(abs(TiempoMuerto2)),
+    PagMedia = mean(abs(TiempoPago)),
     PagSD = sd(abs(TiempoPago)),
-    ConMedia = median(abs(TiempoConfirmacionInscripcion)),
+    ConMedia = mean(abs(TiempoConfirmacionInscripcion)),
     ConSD = sd(abs(TiempoConfirmacionInscripcion)),
-    TotMedia = median(abs(TiempoTotal)),
+    TotMedia = mean(abs(TiempoTotal)),
     TotSD = sd(abs(TiempoTotal))
   )
 
 info2021<-test%>%pivot_longer(cols = ends_with("Media")|ends_with("SD"),names_to = "Proceso")
-
-test<-type.convert(test2022[14:18]) 
+rm(test)
+test<-type.convert(test2022[14:20]) 
 test <-
   test %>% summarise(
-    AcaMedia = median(abs(TiempoCargaAcademica)),
+    AcaMedia = mean(abs(TiempoCargaAcademica)),
     AcaSD = sd(abs(TiempoCargaAcademica)),
-    CalMedia = median(abs(TiempoCalculoCobro)),
+    TiempoMuerto1Media = mean(abs(TiempoMuerto1)),
+    TiempoMuerto1SD = sd(abs(TiempoMuerto1)),
+    CalMedia = mean(abs(TiempoCalculoCobro)),
     CalSD = sd(abs(TiempoCalculoCobro)),
-    PagMedia = median(abs(TiempoPago)),
+    TiempoMuerto2Media = mean(abs(TiempoMuerto2)),
+    TiempoMuerto2SD = sd(abs(TiempoMuerto2)),
+    PagMedia = mean(abs(TiempoPago)),
     PagSD = sd(abs(TiempoPago)),
-    ConMedia = median(abs(TiempoConfirmacionInscripcion)),
+    ConMedia = mean(abs(TiempoConfirmacionInscripcion)),
     ConSD = sd(abs(TiempoConfirmacionInscripcion)),
-    TotMedia = median(abs(TiempoTotal)),
+    TotMedia = mean(abs(TiempoTotal)),
     TotSD = sd(abs(TiempoTotal))
   )
+
 info2022<-test%>%pivot_longer(cols = ends_with("Media")|ends_with("SD"),names_to = "Proceso")
 rm(test)
 #agrupar
-info2021<-info2021%>%arrange(Proceso)%>%group_by()
+info2021<-info2021%>%arrange(Proceso)
 info2022<-info2022%>%arrange(Proceso)
 #Gráficas pendiente#
 barplot(
@@ -164,7 +178,8 @@ barplot(
   ylab = "HORAS",
   col = rainbow(2),
   names.arg = info2021$Proceso,
-  legend.text = c("Media","Desviacion Estandar"),
+  legend.text = c("Media","S.D."),
+  args.legend = list(x = "top", inset = c(-20,0)),
   beside = TRUE
 )
 barplot(
@@ -173,7 +188,9 @@ barplot(
   xlab = "Pasos",
   ylab = "HORAS",
   col = rainbow(2),
-  legend.text = c("Media","Desviacion Estandar"),
-  names.arg = info2022$Proceso
+  names.arg = info2022$Proceso,
+  legend.text = c("Media","S.D."),
+  args.legend = list(x = "top", inset = c(-20,0)),
+  beside = TRUE
 )
 
