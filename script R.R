@@ -1,6 +1,6 @@
 #importar base de datos y libreria#
 library("tidyverse")
-library("lubridate")
+#library("lubridate")
 RegisterData <-
   read_csv("rawTimes.csv", locale = locale(encoding =  "windows-1252")) #native de windows para tildes
 #*LIMPIAR LOS DATOS*#
@@ -13,6 +13,7 @@ data2021 <-
     Facultad != "POSTGRADO",
     HoraRegistro < as.POSIXct("2022-01-01")
   ) %>% arrange(by_group = Matricula)
+
 data2022 <-
   RegisterData %>% filter(
     Campus == "ULV",
@@ -106,8 +107,8 @@ test2021 <- test2021 %>%
     TSCC = round(difftime(Proceso3,Proceso2,units = "hours"),3),
     TACC = round(difftime(Proceso4, Proceso3, units = "hours"),3),
     TCPD = round(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "hours"),3),
-    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3),
-    TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
+    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6bis),Proceso6,Proceso6bis),units = "hours"),3)
+    #TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
   )
 
 test2022 <- test2022 %>%
@@ -116,14 +117,14 @@ test2022 <- test2022 %>%
     TSCC = round(difftime(Proceso3,if_else(is.na(Proceso2),Proceso0,Proceso2),units = "hours"),3),
     TACC = round(difftime(Proceso4, Proceso3, units = "hours"),3),
     TCPD = round(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "hours"),3),
-    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3),
+    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3)
     #TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
   )
 #Prueba graficar pareto#
 
 #*idea, usar pivot_longer o crear dos colunmas para poner en una los nombres de 
 #*los procesos y en la siguiente su valor en mediana y standard deviation*#
-test<-type.convert(test2021[13:18]) 
+test<-type.convert(test2021[13:17]) 
 test <-
   test %>% summarise(
     TACA = mean(abs(TACA)),
@@ -171,10 +172,25 @@ barplot(
   names.arg = info2022$Proceso,
   beside = TRUE
 )
+
 #*cual proceso te toma mas tiempo
-#par matricula cual proceso es mas largo
+#por matricula cual proceso es mas largo
 #pareto
 #nuevo campo en el registro y evaluar el mayor
 #ejemplo pareto
-tabla = table(info2021$Proceso)
-pareto.chart(tabla,col=rainbow(length(tabla)),main = "Inscripción")
+
+test2021<-type.convert(test2021)
+test2021 <-
+  test2021 %>% mutate(Frecuencia = ifelse(pmax(TACA, TSCC, TACC, TCPD, TIF) ==TACA,"TACA",ifelse(pmax(TSCC, TACC, TCPD, TIF) ==TSCC,"TSCC",ifelse(pmax(TACC, TCPD, TIF) ==TACC,"TACC",ifelse(pmax(TCPD, TIF)==TCPD,"TCPD","TIF")))))
+
+tabla = table(as.factor(test2021$Frecuencia))
+pareto.chart(tabla,col=rainbow(length(tabla)),main = "Inscripción 2021")
+rm(tabla)
+
+test2022<-type.convert(test2022)
+test2022 <-
+  test2022 %>% mutate(Frecuencia = ifelse(pmax(TACA, TSCC, TACC, TCPD, TIF) ==TACA,"TACA",ifelse(pmax(TSCC, TACC, TCPD, TIF) ==TSCC,"TSCC",ifelse(pmax(TACC, TCPD, TIF) ==TACC,"TACC",ifelse(pmax(TCPD, TIF)==TCPD,"TCPD","TIF")))))
+
+tabla = table(as.factor(test2022$Frecuencia))
+pareto.chart(tabla,col=rainbow(length(tabla)),main = "Inscripción 2022")
+rm(tabla)
