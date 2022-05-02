@@ -1,5 +1,6 @@
 #importar base de datos y libreria#
 library("tidyverse")
+library("qcc")
 #library("lubridate")
 RegisterData <-
   read_csv("rawTimes.csv", locale = locale(encoding =  "windows-1252")) #native de windows para tildes
@@ -81,25 +82,6 @@ test2022<-test2022%>%
   )
 
 #* operaciones *#
-#* en formato
-# test2021 <- test2021 %>%
-#   mutate(
-#     TiempoCargaAcademica = seconds_to_period(difftime(Proceso2, Proceso1, units = "secs")),
-#     TiempoCalculoCobro = seconds_to_period(difftime(Proceso4, Proceso3, units = "secs")),
-#     TiempoPago = seconds_to_period(difftime(if_else(is.na(Proceso6), Proceso6bis, Proceso6), Proceso5, units = "secs")),
-#     TiempoConfirmacionInscripcion  = seconds_to_period(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "secs")),
-#     TiempoTotal = seconds_to_period(difftime(Proceso7, Proceso1, units = "secs"))
-#   )
-# 
-# test2022 <- test2022 %>%
-#   mutate(
-#     TiempoCargaAcademica = seconds_to_period(if_else(is.na(Proceso0),difftime(Proceso2, Proceso1, units = "secs"), as.difftime(0, units = "secs"))),
-#     TiempoCalculoCobro = seconds_to_period(difftime(Proceso4, Proceso3, units = "secs")),
-#     TiempoPago = seconds_to_period(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "secs")),
-#     TiempoConfirmacionInscripcion  = seconds_to_period(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "secs")),
-#     TiempoTotal = seconds_to_period(difftime(Proceso7, Proceso1, units = "secs"))
-#   )
-
 #*en horas*#
 test2021 <- test2021 %>%
   mutate(
