@@ -82,15 +82,15 @@ test2022<-test2022%>%
   )
 
 #* operaciones *#
-#*en horas*#
+#en horas#
 test2021 <- test2021 %>%
   mutate(
     TACA = round(difftime(Proceso2, Proceso1, units = "hours"),3),
     TSCC = round(difftime(Proceso3,Proceso2,units = "hours"),3),
     TACC = round(difftime(Proceso4, Proceso3, units = "hours"),3),
     TCPD = round(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "hours"),3),
-    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6bis),Proceso6,Proceso6bis),units = "hours"),3)
-    #TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
+    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6bis),Proceso6,Proceso6bis),units = "hours"),3),
+    TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
   )
 
 test2022 <- test2022 %>%
@@ -99,80 +99,64 @@ test2022 <- test2022 %>%
     TSCC = round(difftime(Proceso3,if_else(is.na(Proceso2),Proceso0,Proceso2),units = "hours"),3),
     TACC = round(difftime(Proceso4, Proceso3, units = "hours"),3),
     TCPD = round(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "hours"),3),
-    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3)
-    #TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
+    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3),
+    TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
   )
-#Prueba graficar pareto#
-
-#*idea, usar pivot_longer o crear dos colunmas para poner en una los nombres de 
-#*los procesos y en la siguiente su valor en mediana y standard deviation*#
-test<-type.convert(test2021[13:17]) 
-test <-
-  test %>% summarise(
-    TACA = mean(abs(TACA)),
-    TSCC = mean(abs(TSCC)),
-    TACC = mean(abs(TACC)),
-    TCPD = mean(abs(TCPD)),
-    TIF = mean(abs(TIF)),
-    #TiempoTotal = mean(abs(TiempoTotal))
-  )
-
-info2021<-test%>%pivot_longer(cols = starts_with("T"),names_to = "Proceso")
-rm(test)
-test<-type.convert(test2022[14:18]) 
-test <-
-  test %>% summarise(
-    TACA = mean(abs(TACA)),
-    TSCC = mean(abs(TSCC)),
-    TACC = mean(abs(TACC)),
-    TCPD = mean(abs(TCPD)),
-    TIF = mean(abs(TIF)),
-    #TiempoTotal = mean(abs(TiempoTotal))
-  )
-
-info2022<-test%>%pivot_longer(cols = starts_with("T"),names_to = "Proceso")
-rm(test)
-#agrupar
-info2021<-info2021%>%arrange(desc(value))
-info2022<-info2022%>%arrange(desc(value))
-#Gráficas pendiente#
-barplot(
-  info2021$value, #datos
-  main = "Inscripción 2021",
-  xlab = "Pasos",
-  ylab = "HORAS",
-  col = rainbow(6),
-  names.arg = info2021$Proceso,
-  beside = TRUE
-)
-barplot(
-  info2022$value, #datos
-  main = "Inscripción 2022",
-  xlab = "Pasos",
-  ylab = "HORAS",
-  col = rainbow(6),
-  names.arg = info2022$Proceso,
-  beside = TRUE
-)
-
-#*cual proceso te toma mas tiempo
-#por matricula cual proceso es mas largo
-#pareto
-#nuevo campo en el registro y evaluar el mayor
-#ejemplo pareto
 
 test2021<-type.convert(test2021)
+test2022<-type.convert(test2022)
+#obtener medias-estandar#
+estadistica2021 <-
+  test2021 %>% summarise(
+    TACAm = mean(abs(TACA)),TACAsd = sd(abs(TACA)),
+    TSCCm = mean(abs(TSCC)),TSCCsd = sd(abs(TSCC)),
+    TACCm = mean(abs(TACC)),TACCsd = sd(abs(TACC)),
+    TCPDm = mean(abs(TCPD)),TCPDsd = sd(abs(TCPD)), 
+    TIFm = mean(abs(TIF)),TIFsd = sd(abs(TIF)),
+    TTmedia = mean(abs(TiempoTotal)), TTsd = sd(abs(TiempoTotal))
+  )
+
+estadistica2022 <-
+  test2022 %>% summarise(
+    TACAm = mean(abs(TACA)),TACAsd = sd(abs(TACA)),
+    TSCCm = mean(abs(TSCC)),TSCCsd = sd(abs(TSCC)),
+    TACCm = mean(abs(TACC)),TACCsd = sd(abs(TACC)),
+    TCPDm = mean(abs(TCPD)),TCPDsd = sd(abs(TCPD)), 
+    TIFm = mean(abs(TIF)),TIFsd = sd(abs(TIF)),
+    TTmedia = mean(abs(TiempoTotal)), TTsd = sd(abs(TiempoTotal))
+  )
+
+#*  HISTOGRAMA *#
+
+
+#* PARETOS 2021, 2022 *#
+
+#caso por caso
 test2021 <-
   test2021 %>% mutate(Frecuencia = ifelse(pmax(TACA, TSCC, TACC, TCPD, TIF) ==TACA,"TACA",ifelse(pmax(TSCC, TACC, TCPD, TIF) ==TSCC,"TSCC",ifelse(pmax(TACC, TCPD, TIF) ==TACC,"TACC",ifelse(pmax(TCPD, TIF)==TCPD,"TCPD","TIF")))))
-
 tabla = table(as.factor(test2021$Frecuencia))
-pareto.chart(tabla,col=rainbow(length(tabla)),main = "Inscripción 2021")
+tapareto.chart(tabla,col=rainbow(length(tabla)),main = "Inscripción 2021")
 rm(tabla)
 
-test2022<-type.convert(test2022)
 test2022 <-
   test2022 %>% mutate(Frecuencia = ifelse(pmax(TACA, TSCC, TACC, TCPD, TIF) ==TACA,"TACA",ifelse(pmax(TSCC, TACC, TCPD, TIF) ==TSCC,"TSCC",ifelse(pmax(TACC, TCPD, TIF) ==TACC,"TACC",ifelse(pmax(TCPD, TIF)==TCPD,"TCPD","TIF")))))
-
 tabla = table(as.factor(test2022$Frecuencia))
 pareto.chart(tabla,col=rainbow(length(tabla)),main = "Inscripción 2022")
 rm(tabla)
+
+#por horas
+tabla<-estadistica2021%>%select(ends_with("m"))
+tabla<-tabla%>%pivot_longer(cols = starts_with("T"),names_to = "Proceso")
+x <- round(tabla$value)
+names(x)<-tabla$Proceso
+pareto.chart(x, col = rainbow(length(x)),main = "Inscripción 2021")
+rm(tabla,x)
+
+
+tabla<-estadistica2022%>%select(ends_with("m"))
+tabla<-tabla%>%pivot_longer(cols = starts_with("T"),names_to = "Proceso")
+x <- round(tabla$value)
+names(x)<-tabla$Proceso
+pareto.chart(x, col = rainbow(length(x)),main = "Inscripción 2022")
+rm(tabla,x)
+
