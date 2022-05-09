@@ -127,7 +127,8 @@ estadistica2022 <-
   )
 
 #*  HISTOGRAMA *#
-
+hist(test2021$TiempoTotal, breaks = 30)
+hist(test2022$TiempoTotal, breaks = 30)
 
 #* PARETOS 2021, 2022 *#
 
@@ -135,13 +136,13 @@ estadistica2022 <-
 test2021 <-
   test2021 %>% mutate(Frecuencia = ifelse(pmax(TACA, TSCC, TACC, TCPD, TIF) ==TACA,"TACA",ifelse(pmax(TSCC, TACC, TCPD, TIF) ==TSCC,"TSCC",ifelse(pmax(TACC, TCPD, TIF) ==TACC,"TACC",ifelse(pmax(TCPD, TIF)==TCPD,"TCPD","TIF")))))
 tabla = table(as.factor(test2021$Frecuencia))
-tapareto.chart(tabla,col=rainbow(length(tabla)),main = "Inscripción 2021")
+pareto.chart(tabla,col=rainbow(length(tabla)),main = "Inscripción 2021", ylab = "Estudiantes")
 rm(tabla)
 
 test2022 <-
   test2022 %>% mutate(Frecuencia = ifelse(pmax(TACA, TSCC, TACC, TCPD, TIF) ==TACA,"TACA",ifelse(pmax(TSCC, TACC, TCPD, TIF) ==TSCC,"TSCC",ifelse(pmax(TACC, TCPD, TIF) ==TACC,"TACC",ifelse(pmax(TCPD, TIF)==TCPD,"TCPD","TIF")))))
 tabla = table(as.factor(test2022$Frecuencia))
-pareto.chart(tabla,col=rainbow(length(tabla)),main = "Inscripción 2022")
+pareto.chart(tabla,col=rainbow(length(tabla)),main = "Inscripción 2022", ylab = "Estudiantes")
 rm(tabla)
 
 #por horas
@@ -149,7 +150,7 @@ tabla<-estadistica2021%>%select(ends_with("m"))
 tabla<-tabla%>%pivot_longer(cols = starts_with("T"),names_to = "Proceso")
 x <- round(tabla$value)
 names(x)<-tabla$Proceso
-pareto.chart(x, col = rainbow(length(x)),main = "Inscripción 2021")
+pareto.chart(x, col = rainbow(length(x)),main = "Inscripción 2021", ylab = "Horas")
 rm(tabla,x)
 
 
@@ -157,6 +158,6 @@ tabla<-estadistica2022%>%select(ends_with("m"))
 tabla<-tabla%>%pivot_longer(cols = starts_with("T"),names_to = "Proceso")
 x <- round(tabla$value)
 names(x)<-tabla$Proceso
-pareto.chart(x, col = rainbow(length(x)),main = "Inscripción 2022")
+pareto.chart(x, col = rainbow(length(x)),main = "Inscripción 2022", ylab = "Horas")
 rm(tabla,x)
 
