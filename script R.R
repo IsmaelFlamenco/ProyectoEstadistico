@@ -161,3 +161,12 @@ names(x)<-tabla$Proceso
 pareto.chart(x, col = rainbow(length(x)),main = "Inscripción 2022", ylab = "Horas")
 rm(tabla,x)
 
+#Personas que se tardaron más de 168 horas
+pruebamayor2021 <- test2021 %>%
+  filter(TiempoTotal>168) %>% 
+  arrange(by_group = Matricula)
+
+pruebamayor2022 <- test2022 %>%
+  filter(TiempoTotal>168) %>% 
+  arrange(by_group = Matricula)
+
