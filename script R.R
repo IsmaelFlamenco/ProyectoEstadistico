@@ -85,22 +85,22 @@ test2022<-test2022%>%
 #en horas#
 test2021 <- test2021 %>%
   mutate(
-    TACA = round(difftime(Proceso2, Proceso1, units = "hours"),3),
-    TSCC = round(difftime(Proceso3,Proceso2,units = "hours"),3),
-    TACC = round(difftime(Proceso4, Proceso3, units = "hours"),3),
-    TCPD = round(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "hours"),3),
-    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6bis),Proceso6,Proceso6bis),units = "hours"),3),
-    TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
+    TACA = round(difftime(Proceso2, Proceso1, units = "hours"),2),
+    TSCC = round(difftime(Proceso3,Proceso2,units = "hours"),2),
+    TACC = round(difftime(Proceso4, Proceso3, units = "hours"),2),
+    TCPD = round(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "hours"),2),
+    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6bis),Proceso6,Proceso6bis),units = "hours"),2),
+    TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),2)
   )
 
 test2022 <- test2022 %>%
   mutate(
-    TACA = round(if_else(is.na(Proceso0),difftime(Proceso2, Proceso1, units = "hours"), as.difftime(0, units = "hours")),3),
-    TSCC = round(difftime(Proceso3,if_else(is.na(Proceso2),Proceso0,Proceso2),units = "hours"),3),
-    TACC = round(difftime(Proceso4, Proceso3, units = "hours"),3),
-    TCPD = round(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "hours"),3),
-    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),3),
-    TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),3)
+    TACA = round(if_else(is.na(Proceso0),difftime(Proceso2, Proceso1, units = "hours"), as.difftime(0, units = "hours")),2),
+    TSCC = round(difftime(Proceso3,if_else(is.na(Proceso2),Proceso0,Proceso2),units = "hours"),2),
+    TACC = round(difftime(Proceso4, Proceso3, units = "hours"),2),
+    TCPD = round(difftime(if_else(is.na(Proceso6bis), Proceso6, Proceso6bis), Proceso5, units = "hours"),2),
+    TIF  = round(difftime(Proceso7,if_else(is.na(Proceso6),Proceso6bis,Proceso6),units = "hours"),2),
+    TiempoTotal = round(difftime(Proceso7, Proceso1, units = "hours"),2)
   )
 
 test2021<-type.convert(test2021)
@@ -127,7 +127,7 @@ estadistica2022 <-
   )
 
 #*  HISTOGRAMA *#
-hist(test2021$TiempoTotal, breaks = 30)
+hist(test2021$TiempoTotal, breaks = 20)
 hist(test2022$TiempoTotal, breaks = 30)
 
 #* PARETOS 2021, 2022 *#
