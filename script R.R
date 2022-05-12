@@ -127,8 +127,10 @@ estadistica2022 <-
   )
 
 #*  HISTOGRAMA *#
-hist(test2021$TiempoTotal, breaks = 20)
-hist(test2022$TiempoTotal, breaks = 30)
+hist(test2021$TiempoTotal, breaks = 20, main = "Histograma Tiempo Total de Cada Alumno 2021",xlab = "Horas", ylab = "Alumnos")
+#lines(density(test2021$TiempoTotal), lwd = 2,col = "red")
+hist(test2022$TiempoTotal, breaks = 30, main = "Histograma Tiempo Total de Cada Alumno 2022",xlab = "Horas", ylab = "Alumnos")
+#lines(density(test2022$TiempoTotal), lwd = 2,col = "red")
 
 #* PARETOS 2021, 2022 *#
 
