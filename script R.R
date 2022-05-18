@@ -127,13 +127,39 @@ estadistica2022 <-
   )
 
 #*  HISTOGRAMA *#
-hist(test2021$TiempoTotal, breaks = 20, main = "Histograma Tiempo Total de Cada Alumno 2021",xlab = "Horas", ylab = "Alumnos")
-#lines(density(test2021$TiempoTotal), lwd = 2,col = "red")
-hist(test2022$TiempoTotal, breaks = 30, main = "Histograma Tiempo Total de Cada Alumno 2022",xlab = "Horas", ylab = "Alumnos")
-#lines(density(test2022$TiempoTotal), lwd = 2,col = "red")
+#2021
+histograma <-
+  ggplot(aes(x = TiempoTotal), data = test2021) +
+  geom_histogram(color = "blue",
+                 fill = "blue",
+                 alpha = 0.7) +
+  labs(title = "Histograma Tiempo Total de Cada Alumno 2021") +
+  geom_vline(aes(
+    xintercept = mean(test2021$TiempoTotal),
+    color = "Media"), size = 1) + 
+  geom_vline(aes(
+    xintercept = 168,
+    color = "Limite Superior"), size = 1 ) +
+  scale_color_manual(name = "", values = c(Media = "black", "Limite Superior" = "red")) +
+  xlab("Horas") + ylab("Alumnos")
+
+#2022
+histograma <-
+  ggplot(aes(x = TiempoTotal), data = test2022) + 
+  geom_histogram(color = "blue",
+                 fill = "blue",
+                 alpha = 0.7) +
+  labs(title = "Histograma Tiempo Total de Cada Alumno 2022") +
+  geom_vline(aes(
+    xintercept = mean(test2022$TiempoTotal),
+    color = "media"), size = 1) +
+  geom_vline(aes(
+    xintercept = 168,
+    color = "Limite Superior"), size = 1 ) + 
+  scale_color_manual(name = "", values = c(Media = "black", "Limite Superior" = "red")) +
+  xlab("Horas") + ylab("Alumnos")
 
 #* PARETOS 2021, 2022 *#
-
 #caso por caso
 test2021 <-
   test2021 %>% mutate(Frecuencia = ifelse(pmax(TACA, TSCC, TACC, TCPD, TIF) ==TACA,"TACA",ifelse(pmax(TSCC, TACC, TCPD, TIF) ==TSCC,"TSCC",ifelse(pmax(TACC, TCPD, TIF) ==TACC,"TACC",ifelse(pmax(TCPD, TIF)==TCPD,"TCPD","TIF")))))
